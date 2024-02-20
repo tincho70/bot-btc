@@ -1,0 +1,3 @@
+services:
+  bot-btc:
+    container_name: bot-btc

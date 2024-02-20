@@ -1,0 +1,14 @@
+services:
+  bot-btc:
+    container_name: bot-btc-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file: .env.local
+    ports:
+      - 9229:9229 # debugger port
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/.pnpm-store
+      - /usr/src/app/node_modules
+    command: pnpm start:docker

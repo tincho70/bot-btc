@@ -1,0 +1,8 @@
+version: "3.7"
+
+services:
+  bot-btc:
+    container_name: bot-btc
+    image: tincho70/bot-btc:latest
+    restart: always
+    build: .

@@ -1,0 +1,13 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "restart bot-btc",
+        "type": "shell",
+        "command": "docker compose restart bot-btc",
+        "presentation": {
+          "reveal": "never"
+        }
+      }
+    ]
+  }
