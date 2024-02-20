@@ -1,8 +1,7 @@
-version: "3.7"
-
 services:
   bot-btc:
     container_name: bot-btc
+    env_file: .env
     image: tincho70/bot-btc:latest
     restart: always
     build: .
