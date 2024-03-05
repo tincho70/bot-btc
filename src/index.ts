@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, Collection, GatewayIntentBits } from "discord.js";
 import { readdirSync } from "fs";
 import { join } from "path";
-import { BotEvent } from "./types";
+import { SlashCommand } from "./types";
 
 const client = new Client({
   intents: [
@@ -13,17 +12,14 @@ const client = new Client({
   ],
 });
 
-const eventsPath = join(__dirname, "events");
-const eventFiles = readdirSync(eventsPath);
+client.slashCommands = new Collection<string, SlashCommand>();
+client.cooldowns = new Collection<string, number>();
 
-for (const file of eventFiles) {
-  const filePath = join(eventsPath, file);
-  const event: BotEvent = require(filePath).default;
-  if (event.once) {
-    client.once(event.name, (...args) => event.execute(...args));
-  } else {
-    client.on(event.name, (...args) => event.execute(...args));
-  }
-}
+const handlersDir = join(__dirname, "./handlers");
+readdirSync(handlersDir).forEach(async (handler) => {
+  if (!handler.endsWith(".js")) return;
+  const handlerModule = await import(`${handlersDir}/${handler}`);
+  handlerModule.default(client);
+});
 
 client.login(process.env.DISCORD_BOT_TOKEN);

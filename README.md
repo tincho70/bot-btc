@@ -2,6 +2,8 @@
 
 A simple Discord bot to display the BTC price in $USD in ticker form
 
+[Invite](https://discord.com/api/oauth2/authorize?client_id=1209503705377021953&permissions=67193856&scope=bot) to your discord server.
+
 ## Installation
 
 ```bash
