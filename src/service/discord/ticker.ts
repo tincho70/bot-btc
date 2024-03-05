@@ -1,6 +1,6 @@
 import { ActivityType, Client } from "discord.js";
-import convert from "./Yadio";
-import { YadioPrice } from "./Yadio.d";
+import convert from "../Yadio";
+import { YadioPrice } from "../Yadio";
 
 const botTicker = (client: Client) => {
   client.updateTicker = async (oldPrice: YadioPrice | null = null) => {
