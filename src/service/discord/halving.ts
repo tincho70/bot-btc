@@ -28,7 +28,6 @@ const reportHalving = async (guild: Guild): Promise<string | null> => {
 
   const embed = new EmbedBuilder()
     //.setTitle("Halving is near")
-    //.setDescription("8,683 blocks left\n\n60 days 12 hours 6 minutes")
     .setDescription(
       `# ¡¡¡El halving está cerca!!!\n# Faltan ${blocksToNextHalving.toLocaleString(
         "es-AR",
@@ -51,8 +50,7 @@ const reportHalving = async (guild: Guild): Promise<string | null> => {
     .setColor("#f55600")
     .setFooter({
       text: "Bot BTC",
-      iconURL:
-        "https://cdn.discordapp.com/app-icons/1209503705377021953/e2d5183a5a46a72a327b74b5ff1fcd16.png?size=64",
+      iconURL: channel.guild.members.me?.displayAvatarURL(),
     })
     .setTimestamp();
 
