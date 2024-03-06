@@ -31,11 +31,6 @@ const mempool = (client: Client) => {
                 typeof a.interval === "string"
                   ? Number.parseInt(a.interval)
                   : Number.parseInt(process.env.HALVING_ANNOUNCEMENT_INTERVAL!);
-              console.log(
-                `${typeof a.interval === "string"} ${typeof block.height} ${
-                  block.height
-                } y ${typeof interval} ${interval}`
-              );
               guildRepository.updateHalvingNextAnnouncement(
                 a.id,
                 block.height + interval
@@ -43,16 +38,6 @@ const mempool = (client: Client) => {
             }
           }
         });
-
-    /*  if (block.height % 10 === 0) {
-      console.log(`SENDING HALVING REPORT AT BLOCK ${block.height}`);
-      client.guilds.cache.forEach(async (guild) => {
-        const response = await reportHalving(guild);
-        if (response) {
-          console.error(`ERROR sending halving to guild ${guild.id}`, response);
-        }
-      });
-    } */
   };
   watchMempool(client);
 };
