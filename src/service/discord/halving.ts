@@ -27,7 +27,12 @@ const reportHalving = async (guild: Guild): Promise<string | null> => {
     calculateHalvingData(guild.client.averageBlockTime, lastBlock.height);
 
   const embed = new EmbedBuilder()
-    .setTitle(`Bloque ${lastBlock.height} minado`)
+    .setTitle(
+      `Bloque ${lastBlock.height.toLocaleString("es-AR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })} minado`
+    )
     .setDescription(
       `# ¡¡¡El halving está cerca!!!\n# Faltan ${blocksToNextHalving.toLocaleString(
         "es-AR",
