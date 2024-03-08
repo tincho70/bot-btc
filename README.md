@@ -2,7 +2,7 @@
 
 A simple Discord bot to display the BTC price in $USD in ticker form
 
-[Invite](https://discord.com/api/oauth2/authorize?client_id=1209503705377021953&permissions=67193856&scope=bot) to your discord server.
+[Invite](https://discord.com/api/oauth2/authorize?client_id=1207661153657032744&permissions=67193856&scope=bot) to your discord server.
 
 ## Installation
 
@@ -17,6 +17,13 @@ First at all, you need to rename `env.example` to `.env.local` and replace the v
 - DISCORD_BOT_TOKEN = your bot token
 - DISCORD_APP_ID = your app id
 - NODE_ENV = "development"
+- DISCORD_GUILD_ID = your guild id
+- HALVING_ANNOUNCEMENT_INTERVAL = "10" (number of blocks for automatic halving announcement)
+- POSTGRES_DB = "database"
+- POSTGRES_USER = "username"
+- POSTGRES_PASSWORD = "password"
+- POSTGRES_HOST = "localhost"
+- POSTGRES_PORT = "5432"
 
 You can build the project with `pnpm build` and run it with `pnpm start`
 
@@ -39,6 +46,12 @@ Rename `env.example` to `.env` and replace the values in it with your own.
 - DISCORD_BOT_TOKEN = your bot token
 - DISCORD_APP_ID = your app id
 - NODE_ENV = "produtcion"
+- HALVING_ANNOUNCEMENT_INTERVAL = "10" (number of blocks for automatic halving announcement)
+- POSTGRES_DB = "database"
+- POSTGRES_USER = "username"
+- POSTGRES_PASSWORD = "password"
+- POSTGRES_HOST = "localhost"
+- POSTGRES_PORT = "5432"
 
 ### Run with pnpm
 
