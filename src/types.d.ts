@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Collection } from "discord.js";
-import { YadioPrice } from "./service/Yadio.d";
 import { Block } from "@mempool/mempool.js/lib/interfaces/bitcoin/blocks";
 
 export interface SlashCommand {
@@ -16,9 +15,10 @@ declare module "discord.js" {
     slashCommands: Collection<string, SlashCommand>;
     cooldowns: Collection<string, number>;
     lastBlock: Block | null;
+    lastPrice: number | null;
     averageBlockTime: number | null;
     updateLastBlock: (block: Block) => void;
-    updateTicker: (oldPrice: YadioPrice | null) => Promise<YadioPrice | null>;
+    updateTicker: (price: number, open24h: number) => void;
   }
 }
 

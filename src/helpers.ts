@@ -84,3 +84,16 @@ export const formatDate = (d: Date): string => {
     })
     .replace(",", "");
 };
+
+export const formatPercentageChange = (
+  startPrice: number,
+  currentPrice: number
+): string => {
+  const priceChange = Number((currentPrice / startPrice - 1).toPrecision(2));
+
+  return new Intl.NumberFormat("es-AR", {
+    style: "percent",
+    minimumFractionDigits: 2,
+    signDisplay: "exceptZero",
+  }).format(priceChange);
+};
