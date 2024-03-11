@@ -1,54 +1,40 @@
 import { ActivityType, Client } from "discord.js";
-import convert from "../Yadio";
-import { YadioPrice } from "../Yadio";
+import watchPrice from "../coinbase/coinbase";
+import { formatPercentageChange } from "../../helpers";
 
-const botTicker = (client: Client) => {
-  client.updateTicker = async (oldPrice: YadioPrice | null = null) => {
+const ticker = (client: Client) => {
+  client.updateTicker = async (price: number, open24h: number) => {
     try {
-      const yadio = await convert(1, "btc", "usd");
-      if (yadio && !yadio.error) {
-        const price = yadio.result;
-        const nickname = `$${price.toLocaleString("es-AR", {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        })}`;
+      const nickname = `$${price.toLocaleString("es-AR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })}`;
 
-        // If new timestamp is higher, calculate variation and update presence
-        if (oldPrice && yadio.timestamp > oldPrice.timestamp) {
-          const variation = ((price - oldPrice.price) / oldPrice.price) * 100;
-          const emoji = variation === 0 ? " " : variation > 0 ? "📈" : "📉";
-          client.user!.setPresence({
-            activities: [
-              {
-                type: ActivityType.Custom,
-                name: "custom", // name is exposed through the API but not shown in the client for ActivityType.Custom
-                state: `Var: ${emoji} ${variation.toLocaleString("es-AR", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}%`,
-              },
-            ],
-            status: "online",
-          });
+      const change = formatPercentageChange(open24h, price);
+      client.user!.setPresence({
+        activities: [
+          {
+            type: ActivityType.Custom,
+            name: "custom", // name is exposed through the API but not shown in the client for ActivityType.Custom
+            state: `Var. diaria: ${change}`,
+          },
+        ],
+        status: "online",
+      });
+
+      client.lastPrice = price;
+
+      client.guilds.cache.forEach((guild) => {
+        if (nickname != guild.members.me?.nickname) {
+          guild.members.me?.setNickname(nickname).catch(console.error);
         }
-
-        client.guilds.cache.forEach((guild) => {
-          if (nickname != guild.members.me?.nickname) {
-            guild.members.me?.setNickname(nickname).catch(console.error);
-          }
-        });
-
-        return {
-          price: yadio.result,
-          timestamp: yadio.timestamp,
-        } as YadioPrice;
-      }
-      return null;
+      });
     } catch (error) {
       console.error(error);
-      return null;
     }
   };
+
+  watchPrice(client);
 };
 
-export default botTicker;
+export default ticker;
