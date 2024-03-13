@@ -8,7 +8,7 @@ const watchPrice = async (client: Client) => {
     // For my development environment
     const agent =
       process.env.NODE_ENV == "development"
-        ? new SocksProxyAgent("socks://100.100.10.123:8088")
+        ? new SocksProxyAgent(process.env.SOCKS_PROXY!)
         : undefined;
 
     const server = "wss://ws-feed.exchange.coinbase.com";
@@ -39,6 +39,8 @@ const watchPrice = async (client: Client) => {
 
     ws.on("close", (message: string) => {
       console.log(`Unsubscribe to server ${server} with message: ${message}`);
+      console.log(`Trying to reconnect in 5 seconds...`);
+      setTimeout(() => watchPrice(client), 5000);
     });
   } catch (error) {
     console.error("Error in watchPrice: ", error);
