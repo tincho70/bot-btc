@@ -26,7 +26,11 @@ class Database {
     const start = Date.now();
     const res = await this.pool.query(text, params);
     const duration = Date.now() - start;
-    console.debug("executed query", { text, duration, rows: res.rowCount });
+    console.debug("executed query", {
+      text: text,
+      duration: duration,
+      count: res.rowCount,
+    });
     return res;
   }
 

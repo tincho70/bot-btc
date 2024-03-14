@@ -6,10 +6,11 @@ import { CoinbaseMessage } from "./coinbase.d";
 const watchPrice = async (client: Client) => {
   try {
     // For my development environment
-    const agent =
-      process.env.NODE_ENV == "development"
-        ? new SocksProxyAgent(process.env.SOCKS_PROXY!)
-        : undefined;
+    const agent = process.env.SOCKS_PROXY
+      ? new SocksProxyAgent(process.env.SOCKS_PROXY, {
+          keepAlive: true,
+        })
+      : undefined;
 
     const server = "wss://ws-feed.exchange.coinbase.com";
     const ws = new WebSocket(server, { agent });

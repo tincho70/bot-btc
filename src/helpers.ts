@@ -5,6 +5,7 @@ import {
   PermissionResolvable,
   TextChannel,
 } from "discord.js";
+import debug from "debug";
 
 export const checkPermissions = (
   member: GuildMember,
@@ -97,3 +98,5 @@ export const formatPercentageChange = (
     signDisplay: "exceptZero",
   }).format(priceChange);
 };
+
+export const logger: debug.Debugger = debug("bot-btc");
