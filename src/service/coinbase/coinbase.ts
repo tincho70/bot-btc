@@ -36,9 +36,9 @@ const watchPrice = async (client: Client) => {
 
     ws.on("message", (message: string) => {
       const ticker = JSON.parse(message) as CoinbaseMessage;
-      debug(`Received message from server: ${message}`);
-      if (ticker.type === "ticker")
-        client.updateTicker(+ticker.price, +ticker.open_24h);
+      ticker.type === "ticker"
+        ? client.updateTicker(+ticker.price, +ticker.open_24h)
+        : debug(`Received message from server: ${message}`);
     });
 
     ws.on("close", (message: string) => {
