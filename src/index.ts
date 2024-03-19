@@ -10,6 +10,12 @@ const client = new Client({
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.MessageContent,
   ],
+  rest: {
+    rejectOnRateLimit: (rateLimitData) => {
+      // Handle rate limit on setNickName
+      return rateLimitData.route === "/guilds/:id/members/@me";
+    },
+  },
 });
 
 client.slashCommands = new Collection<string, SlashCommand>();

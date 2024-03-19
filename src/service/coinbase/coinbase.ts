@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 import WebSocket from "ws";
-import { SocksProxyAgent } from "socks-proxy-agent";
+import { HttpsProxyAgent } from "https-proxy-agent";
 import { CoinbaseMessage } from "./coinbase.d";
 import { logger } from "../../helpers";
 import { Debugger } from "debug";
@@ -12,7 +12,8 @@ const watchPrice = async (client: Client) => {
   try {
     // For my development environment
     const agent = process.env.SOCKS_PROXY
-      ? new SocksProxyAgent(process.env.SOCKS_PROXY, {
+      ? //new SocksProxyAgent(process.env.SOCKS_PROXY, {
+        new HttpsProxyAgent(process.env.SOCKS_PROXY, {
           keepAlive: true,
         })
       : undefined;

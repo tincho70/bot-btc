@@ -1,4 +1,4 @@
-import { ActivityType, Client } from "discord.js";
+import { ActivityType, Client, Collection, RateLimitError } from "discord.js";
 import watchPrice from "../coinbase/coinbase";
 import { formatPercentageChange, logger } from "../../helpers";
 import { Debugger } from "debug";
@@ -8,6 +8,8 @@ const ticker = (client: Client) => {
     const log: Debugger = logger.extend("updateTicker");
     const error: Debugger = log.extend("error");
     const debug: Debugger = log.extend("debug");
+    const trackLimits = new Collection<string, number>();
+
     try {
       const nickname = `$${price.toLocaleString("es-AR", {
         minimumFractionDigits: 0,
@@ -15,7 +17,6 @@ const ticker = (client: Client) => {
       })}`;
 
       const change = formatPercentageChange(open24h, price);
-      debug(`Updating ticker to ${price} (${change})`);
       client.user!.setPresence({
         activities: [
           {
@@ -28,10 +29,31 @@ const ticker = (client: Client) => {
       });
 
       client.lastPrice = price;
+      debug(`Updating nickname to ${nickname}`);
 
       client.guilds.cache.forEach((guild) => {
         if (nickname != guild.members.me?.nickname) {
-          guild.members.me?.setNickname(nickname).catch(error);
+          if (trackLimits.has(guild.id)) {
+            if (trackLimits.get(guild.id)! < new Date().getTime()) {
+              debug("Resetting limit");
+              trackLimits.delete(guild.id);
+            } else {
+              return;
+            }
+          }
+
+          guild.members.me?.setNickname(nickname).catch((err) => {
+            if (err instanceof RateLimitError) {
+              error(
+                "LIMIT on guild %s - Waiting for %d",
+                guild.id,
+                err.timeToReset
+              );
+              trackLimits.set(guild.id, err.timeToReset + new Date().getTime());
+            } else {
+              error("Error in setNickname: %o", err);
+            }
+          });
         }
       });
     } catch (err) {
