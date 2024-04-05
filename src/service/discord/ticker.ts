@@ -39,7 +39,7 @@ const ticker = (client: Client) => {
       // First time = color Green, otherwhise, check if price is higher or lower
       let colorOn = "Ticker Green";
       let colorOff = "Ticker Red";
-      if (price < client.lastPrice) {
+      if (client.lastPrice !== null && price < client.lastPrice) {
         colorOn = "Ticker Red";
         colorOff = "Ticker Green";
       }
