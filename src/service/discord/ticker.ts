@@ -1,13 +1,21 @@
-import { ActivityType, Client, Collection, RateLimitError } from "discord.js";
+import {
+  ActivityType,
+  Client,
+  Collection,
+  GuildMember,
+  RateLimitError,
+  Role,
+} from "discord.js";
 import watchPrice from "../coinbase/coinbase";
 import { formatPercentageChange, logger } from "../../helpers";
 import { Debugger } from "debug";
 
+const log: Debugger = logger.extend("updateTicker");
+const error: Debugger = log.extend("error");
+const debug: Debugger = log.extend("debug");
+
 const ticker = (client: Client) => {
   client.updateTicker = async (price: number, open24h: number) => {
-    const log: Debugger = logger.extend("updateTicker");
-    const error: Debugger = log.extend("error");
-    const debug: Debugger = log.extend("debug");
     const trackLimits = new Collection<string, number>();
 
     try {
@@ -28,11 +36,21 @@ const ticker = (client: Client) => {
         status: "online",
       });
 
+      // First time = color Green, otherwhise, check if price is higher or lower
+      let colorOn = "Ticker Green";
+      let colorOff = "Ticker Red";
+      if (price < client.lastPrice) {
+        colorOn = "Ticker Red";
+        colorOff = "Ticker Green";
+      }
+
       client.lastPrice = price;
-      debug(`Updating nickname to ${nickname}`);
+      debug(`Updating nickname to ${nickname} and role to ${colorOn}`);
 
       client.guilds.cache.forEach((guild) => {
-        if (nickname != guild.members.me?.nickname) {
+        const bot: GuildMember = guild.members.me!;
+
+        if (nickname != bot.nickname) {
           if (trackLimits.has(guild.id)) {
             if (trackLimits.get(guild.id)! < new Date().getTime()) {
               debug("Resetting limit");
@@ -42,16 +60,19 @@ const ticker = (client: Client) => {
             }
           }
 
-          guild.members.me?.setNickname(nickname).catch((err) => {
-            if (err instanceof RateLimitError) {
+          changeNickname(
+            bot,
+            nickname,
+            guild.roles.cache.find((role) => role.name == colorOn),
+            guild.roles.cache.find((role) => role.name == colorOff)
+          ).then((timeToReset) => {
+            if (timeToReset) {
               error(
                 "LIMIT on guild %s - Waiting for %d",
                 guild.id,
-                err.timeToReset
+                timeToReset
               );
-              trackLimits.set(guild.id, err.timeToReset + new Date().getTime());
-            } else {
-              error("Error in setNickname: %o", err);
+              trackLimits.set(guild.id, timeToReset + new Date().getTime());
             }
           });
         }
@@ -62,6 +83,27 @@ const ticker = (client: Client) => {
   };
 
   watchPrice(client);
+};
+
+const changeNickname = async (
+  bot: GuildMember,
+  nickname: string,
+  roleOn: Role | undefined,
+  roleOff: Role | undefined
+) => {
+  try {
+    await bot.setNickname(nickname);
+    if (roleOn == undefined) return;
+    await bot.roles.add(roleOn);
+    await bot.roles.remove(roleOff);
+  } catch (err) {
+    if (err instanceof RateLimitError) {
+      return err.timeToReset;
+    } else {
+      error("Error in changeNickname: %o", err);
+    }
+  }
+  return 0;
 };
 
 export default ticker;
