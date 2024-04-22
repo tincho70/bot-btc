@@ -10,13 +10,13 @@ const command: SlashCommand = {
   command: new SlashCommandBuilder()
     .setName("halving_interval")
     .setDescription(
-      "Cambia el intervalo en que se mandan los mensajes del halving"
+      "Cambia el intervalo en que se mandan los mensajes del halving (0 = pausa)"
     )
     .addIntegerOption((option) =>
       option
         .setName("interval")
         .setDescription("Intervalo en bloques")
-        .setMinValue(1)
+        .setMinValue(0)
         .setMaxValue(999)
         .setRequired(true)
     )
@@ -35,11 +35,15 @@ const command: SlashCommand = {
       );
 
       if (updatedGuild) {
-        await interaction.editReply({
-          content: `El mensaje automático se mostrará cada \`${interval}\` bloque${
-            interval === 1 ? "" : "s"
-          }`,
-        });
+        interval == 0
+          ? await interaction.editReply({
+              content: `Se pausó el envío automático de mensajes del halving`,
+            })
+          : await interaction.editReply({
+              content: `El mensaje automático se mostrará cada \`${interval}\` bloque${
+                interval === 1 ? "" : "s"
+              }`,
+            });
         console.info(`Guild updated: ${updatedGuild}`);
       } else {
         console.error(`ERROR in havling_interval command: ${updatedGuild}`);

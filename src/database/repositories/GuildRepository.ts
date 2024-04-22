@@ -140,7 +140,7 @@ class GuildRepository implements IRepository<Guild> {
     try {
       const updated = await this.update(id, {
         interval: interval,
-        next_announcement: lastBlock + interval,
+        next_announcement: interval == 0 ? undefined : lastBlock + interval,
       });
       if (!updated) {
         const guild = this.create({
