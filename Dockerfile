@@ -17,6 +17,7 @@ FROM gcr.io/distroless/nodejs18-debian11
 
 COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=build /app/dist /app/dist
+COPY --from=build /app/assets /app/assets
 COPY --from=build /app/package.json /app/package.json
 
 WORKDIR /app

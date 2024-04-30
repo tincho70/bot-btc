@@ -1,6 +1,6 @@
 FROM node:18-bookworm-slim
 
-RUN npm i -g pnpm
+RUN corepack enable
 
 WORKDIR /usr/src/app
 
