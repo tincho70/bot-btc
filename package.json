@@ -1,6 +1,6 @@
 {
   "name": "bot-btc",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A simple Discord bot to display the BTC price in $USD in ticker form",
   "main": "index.js",
   "scripts": {
