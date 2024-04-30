@@ -17,7 +17,7 @@ const command: SlashCommand = {
         .setName("interval")
         .setDescription("Intervalo en bloques")
         .setMinValue(0)
-        .setMaxValue(999)
+        .setMaxValue(9999)
         .setRequired(true)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
