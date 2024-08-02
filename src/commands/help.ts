@@ -18,17 +18,21 @@ const command: SlashCommand = {
         author.iconURL = interaction.guild?.members.me?.user.avatarURL() ?? "";
       }
 
-      const commands = interaction.client.slashCommands
-        .filter((cmd: any) => cmd.data.name !== "ayuda")
-        .map((cmd: { data: any }) => cmd.data);
+      const commands: SlashCommandBuilder[] = interaction.client.slashCommands
+        .filter((cmd: SlashCommand) => cmd.command.name !== "help")
+        .map((cmd: { command: SlashCommand }) => cmd.command);
+
       const embed = new EmbedBuilder()
         .setAuthor(author)
         .setTitle("AYUDA")
         .setDescription(
-          `Soy un simple bot de Discord que muestra en forma de ticker el precio de 1 Bitcoin en dólares Americano.\n(*buscame en el lateral derecho del servidor*)\n\nLos **comandos** que podés usar conmigo son:\n\n${commands.map(
-            (cmd: { name: any; description: any }) =>
-              `* \`/${cmd.name}\`: ${cmd.description}`
-          )}`
+          `Soy un simple bot de Discord que muestra en forma de ticker el precio de 1 Bitcoin en dólares Americano.\n(*buscame en el lateral derecho del servidor*)\n\nLos **comandos** que podés usar conmigo son:\n\n
+          ${commands
+            .map(
+              (cmd: SlashCommandBuilder) =>
+                `* \`/${cmd.name}\`: ${cmd.description}`
+            )
+            .join("\n")}`
         )
         .setColor("#f99823");
 
