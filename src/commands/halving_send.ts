@@ -1,6 +1,10 @@
 import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../types";
 import reportHalving from "../service/discord/halving";
+import { Debugger } from "debug";
+import { logger } from "../helpers";
+
+const error: Debugger = logger.extend("halving_send").extend("error");
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
@@ -17,8 +21,8 @@ const command: SlashCommand = {
       } else {
         interaction.editReply("Aviso enviado");
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      error(err);
       await interaction.editReply("Algo salió mal...");
     }
   },

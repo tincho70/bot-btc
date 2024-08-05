@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../types";
+import { Debugger } from "debug";
+import { logger } from "../helpers";
+
+const error: Debugger = logger.extend("help").extend("error");
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
@@ -37,8 +41,8 @@ const command: SlashCommand = {
         .setColor("#f99823");
 
       await interaction.editReply({ embeds: [embed] });
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      error(err);
       interaction.editReply({ content: "Algo salió mal..." });
     }
   },

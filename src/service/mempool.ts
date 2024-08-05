@@ -3,6 +3,11 @@ import mempoolJS from "@mempool/mempool.js";
 import { Block } from "@mempool/mempool.js/lib/interfaces/bitcoin/blocks";
 import { Client } from "discord.js";
 
+import { Debugger } from "debug";
+import { logger } from "../helpers";
+
+const error: Debugger = logger.extend("mempool").extend("error");
+
 const watchMempool = async (client: Client) => {
   try {
     const {
@@ -27,8 +32,8 @@ const watchMempool = async (client: Client) => {
         client.updateLastBlock(res.block);
       }
     });
-  } catch (error) {
-    console.error("Error in watchMempool: ", error);
+  } catch (err) {
+    error("Error in watchMempool: ", err);
   }
 };
 
@@ -43,8 +48,8 @@ const getLastBlock = async (): Promise<Block | null> => {
     })) as any;
 
     return getBlocks ? getBlocks[0] : null;
-  } catch (error) {
-    console.error("Error in getLastBlock: ", error);
+  } catch (err) {
+    error("Error in getLastBlock: ", err);
     return null;
   }
 };
@@ -57,8 +62,8 @@ const getTimeAvg = async (): Promise<number | null> => {
 
     const difficultyAdjustment = await difficulty.getDifficultyAdjustment();
     return difficultyAdjustment.timeAvg;
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    error(err);
     return null;
   }
 };

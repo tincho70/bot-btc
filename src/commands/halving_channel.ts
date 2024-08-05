@@ -6,6 +6,11 @@ import {
 } from "discord.js";
 import { guildRepository } from "../database/repositories/GuildRepository";
 import { SlashCommand } from "../types";
+import { Debugger } from "debug";
+import { logger } from "../helpers";
+
+const log: Debugger = logger.extend("halving_channel");
+const error: Debugger = log.extend("error");
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
@@ -38,15 +43,15 @@ const command: SlashCommand = {
         await interaction.editReply({
           content: `Canal de reportes cambiado a \`${channel.name}\``,
         });
-        console.info(`Guild updated: ${updatedGuild}`);
+        log(`Guild updated: ${updatedGuild}`);
       } else {
-        console.error(`ERROR in havling_channel command: ${updatedGuild}`);
+        error(`ERROR in havling_channel command: ${updatedGuild}`);
         await interaction.editReply({
           content: "Hubo un error al intentar cambiar el canal...",
         });
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      error(err);
       await interaction.editReply({ content: "Algo salió mal..." });
     }
   },

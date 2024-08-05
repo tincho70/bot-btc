@@ -2,6 +2,11 @@ import { Collection } from "discord.js";
 import { db } from "../database";
 import { Guild, Partial } from "../entities/Guild";
 import { IRepository } from "./IRepository";
+import { Debugger } from "debug";
+import { logger } from "../../helpers";
+
+const log: Debugger = logger.extend("GuildRepository");
+const error: Debugger = log.extend("error");
 
 class GuildRepository implements IRepository<Guild> {
   private guilds: Collection<string, Guild> = new Collection();
@@ -18,8 +23,8 @@ class GuildRepository implements IRepository<Guild> {
       if (rows.length === 0) return null;
       this.guilds.set(id, rows[0]);
       return rows[0];
-    } catch (error) {
-      console.error("ERROR in Guild.getById:", error);
+    } catch (err) {
+      error("ERROR in Guild.getById:", err);
       return null;
     }
   }
@@ -41,8 +46,8 @@ class GuildRepository implements IRepository<Guild> {
       // Cache guild
       this.guilds.set(guild.id, rows[0]);
       return rows[0];
-    } catch (error) {
-      console.error("ERROR in Guild.create:", error);
+    } catch (err) {
+      error("ERROR in Guild.create:", err);
       return null;
     }
   }
@@ -62,7 +67,7 @@ class GuildRepository implements IRepository<Guild> {
       }
 
       if (updateFields.length === 0) {
-        console.warn("No fields specified to update.");
+        log("No fields specified to update.");
         return null;
       }
 
@@ -76,8 +81,8 @@ class GuildRepository implements IRepository<Guild> {
       // Update cache
       this.guilds.set(id, rows[0]);
       return rows[0];
-    } catch (error) {
-      console.error("ERROR in Guild.update:", error);
+    } catch (err) {
+      error("ERROR in Guild.update:", err);
       return null;
     }
   }
@@ -88,8 +93,8 @@ class GuildRepository implements IRepository<Guild> {
       const values = [id];
       await db.query(query, values);
       return true;
-    } catch (error) {
-      console.error("ERROR in Guild.delete:", error);
+    } catch (err) {
+      error("ERROR in Guild.delete:", err);
       return false;
     }
   }
@@ -126,8 +131,8 @@ class GuildRepository implements IRepository<Guild> {
         return guild || null;
       }
       return updated || null;
-    } catch (error) {
-      console.error("ERROR in Guild.updateHalvingChannel:", error);
+    } catch (err) {
+      error("ERROR in Guild.updateHalvingChannel:", err);
       return null;
     }
   }
@@ -152,8 +157,8 @@ class GuildRepository implements IRepository<Guild> {
         return guild || null;
       }
       return updated || null;
-    } catch (error) {
-      console.error("ERROR in Guild.updateHalvingInterval:", error);
+    } catch (err) {
+      error("ERROR in Guild.updateHalvingInterval:", err);
       return null;
     }
   }
@@ -175,8 +180,8 @@ class GuildRepository implements IRepository<Guild> {
         return guild || null;
       }
       return updated || null;
-    } catch (error) {
-      console.error("ERROR in Guild.updateHalvingNextAnnouncement:", error);
+    } catch (err) {
+      error("ERROR in Guild.updateHalvingNextAnnouncement:", err);
       return null;
     }
   }
@@ -195,8 +200,8 @@ class GuildRepository implements IRepository<Guild> {
         this.announcements.set(row.next_announcement, row);
       });
       return rows;
-    } catch (error) {
-      console.error("ERROR in Guild.getById:", error);
+    } catch (err) {
+      error("ERROR in Guild.getById:", err);
       return null;
     }
   }

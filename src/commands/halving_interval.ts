@@ -5,6 +5,11 @@ import {
 } from "discord.js";
 import { guildRepository } from "../database/repositories/GuildRepository";
 import { SlashCommand } from "../types";
+import { Debugger } from "debug";
+import { logger } from "../helpers";
+
+const log: Debugger = logger.extend("halving_interval");
+const error: Debugger = log.extend("error");
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
@@ -44,15 +49,15 @@ const command: SlashCommand = {
                 interval === 1 ? "" : "s"
               }`,
             });
-        console.info(`Guild updated: ${updatedGuild}`);
+        log(`Guild updated: ${updatedGuild}`);
       } else {
-        console.error(`ERROR in havling_interval command: ${updatedGuild}`);
+        error(`ERROR in havling_interval command: ${updatedGuild}`);
         await interaction.editReply({
           content: "Hubo un error al intentar cambiar el intervalo...",
         });
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      error(err);
       await interaction.editReply({ content: "Algo salió mal..." });
     }
   },

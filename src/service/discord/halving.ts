@@ -4,6 +4,11 @@ import calculateHalvingData from "../bitcoin/halvingData";
 //import getHalvingMessage from "./halvingMessages/halvingSeAcerca";
 import getHalvingMessage from "./halvingMessages/faltan";
 
+import { Debugger } from "debug";
+import { logger } from "../../helpers";
+
+const error: Debugger = logger.extend("halving").extend("error");
+
 const reportHalving = async (guild: Guild): Promise<string | null> => {
   const guildConfig = await guildRepository.getById(guild.id);
   if (!guildConfig) {
@@ -44,8 +49,8 @@ const reportHalving = async (guild: Guild): Promise<string | null> => {
     file
       ? await channel.send({ embeds: [embed], files: [file] })
       : await channel.send({ embeds: [embed] });
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    error(err);
   }
   return null;
 };

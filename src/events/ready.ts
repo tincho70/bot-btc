@@ -3,6 +3,8 @@ import ticker from "../service/discord/ticker";
 import { BotEvent } from "../types";
 import mempool from "../service/discord/mempool";
 
+import { logger } from "../helpers";
+
 const event: BotEvent = {
   name: Events.ClientReady,
   once: true,
@@ -10,9 +12,7 @@ const event: BotEvent = {
     ticker(client);
     mempool(client);
     //await client.updateTicker();
-    console.log(
-      `🚀 Discord bot ready with APP_ID: ${process.env.DISCORD_APP_ID}`
-    );
+    logger(`🚀 Discord bot ready with APP_ID: ${process.env.DISCORD_APP_ID}`);
   },
 };
 

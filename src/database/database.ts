@@ -1,4 +1,9 @@
 import { Pool } from "pg";
+import { Debugger } from "debug";
+import { logger } from "../helpers";
+
+const log: Debugger = logger.extend("database");
+const error: Debugger = log.extend("error");
 
 class Database {
   private pool!: Pool;
@@ -14,9 +19,9 @@ class Database {
           ? parseInt(process.env.POSTGRES_PORT, 10)
           : 5432, // Default
       });
-      console.log(`💾 Database ${process.env.POSTGRES_DB}`);
-    } catch (error) {
-      console.error(
+      log(`💾 Database ${process.env.POSTGRES_DB}`);
+    } catch (err) {
+      error(
         `💾 Connection to database ${process.env.POSTGRES_DB} failed, skipping...`
       );
     }
@@ -26,7 +31,7 @@ class Database {
     const start = Date.now();
     const res = await this.pool.query(text, params);
     const duration = Date.now() - start;
-    console.debug("executed query", {
+    log("executed query", {
       text: text,
       duration: duration,
       count: res.rowCount,

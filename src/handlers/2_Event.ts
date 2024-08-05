@@ -2,6 +2,7 @@ import { Client } from "discord.js";
 import { readdirSync } from "fs";
 import { join } from "path";
 import { BotEvent } from "../types";
+import { logger } from "../helpers";
 
 module.exports = (client: Client) => {
   const eventsDir = join(__dirname, "../events");
@@ -13,6 +14,6 @@ module.exports = (client: Client) => {
     event.once
       ? client.once(event.name, (...args) => event.execute(...args))
       : client.on(event.name, (...args) => event.execute(...args));
-    console.log(`🙌 Successfully loaded event ${event.name}`);
+    logger(`🙌 Successfully loaded event ${event.name}`);
   });
 };

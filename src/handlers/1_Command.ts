@@ -5,6 +5,12 @@ import { readdirSync, existsSync } from "fs";
 import { join } from "path";
 import { SlashCommand } from "../types";
 
+import { Debugger } from "debug";
+import { logger } from "../helpers";
+
+const log: Debugger = logger;
+const error: Debugger = log.extend("error");
+
 module.exports = (client: Client) => {
   const slashCommands: SlashCommandBuilder[] = [];
 
@@ -29,10 +35,10 @@ module.exports = (client: Client) => {
         body: slashCommands.map((command) => command.toJSON()),
       })
       .then((data: any) => {
-        console.info(`🔶 Successfully loaded ${data.length} slash command(s)`);
+        log(`🔶 Successfully loaded ${data.length} slash command(s)`);
       })
-      .catch((e) => {
-        console.error(e);
+      .catch((err) => {
+        error(err);
       });
   } else {
     // In development, I only deploy to the development server
@@ -47,12 +53,12 @@ module.exports = (client: Client) => {
         }
       )
       .then((data: any) => {
-        console.info(
+        log(
           `🔶 Successfully loaded ${data.length} slash command(s) in GUILD_ID ${process.env.DISCORD_GUILD_ID}`
         );
       })
-      .catch((e) => {
-        console.error(e);
+      .catch((err) => {
+        error(err);
       });
   }
 };

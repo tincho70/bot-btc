@@ -4,6 +4,11 @@ import watchMempool from "../mempool";
 import reportHalving from "./halving";
 import { guildRepository } from "../../database/repositories/GuildRepository";
 import { Guild as GuildConfig } from "../../database/entities/Guild";
+import { Debugger } from "debug";
+import { logger } from "../../helpers";
+
+const log: Debugger = logger.extend("MempoolDiscord");
+const error: Debugger = log.extend("error");
 
 const mempool = (client: Client) => {
   client.updateLastBlock = async (block: Block) => {
@@ -15,17 +20,12 @@ const mempool = (client: Client) => {
       announcements
         .filter((a: GuildConfig) => a.next_announcement! <= block.height)
         .forEach(async (a: GuildConfig) => {
-          console.log(
-            `SENDING HALVING REPORT AT BLOCK ${block.height} to ${a.id}`
-          );
+          log(`SENDING HALVING REPORT AT BLOCK ${block.height} to ${a.id}`);
           const guild = client.guilds.cache.get(a.id);
           if (guild) {
             const response = await reportHalving(guild);
             if (response) {
-              console.error(
-                `ERROR sending halving to guild ${guild.id}`,
-                response
-              );
+              error(`ERROR sending halving to guild ${guild.id}`, response);
             } else {
               const interval =
                 typeof a.interval === "string"

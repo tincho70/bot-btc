@@ -1,6 +1,13 @@
 import { Interaction } from "discord.js";
 import { BotEvent } from "../types";
 
+import { Debugger } from "debug";
+import { logger } from "../helpers";
+
+const error: Debugger = logger
+  .extend("Event:InteractionCreate")
+  .extend("error");
+
 const event: BotEvent = {
   name: "interactionCreate",
   execute: (interaction: Interaction) => {
@@ -15,16 +22,14 @@ const event: BotEvent = {
         interaction.commandName
       );
       if (!command) {
-        console.error(
-          `No command matching ${interaction.commandName} was found.`
-        );
+        error(`No command matching ${interaction.commandName} was found.`);
         return;
       }
       try {
         if (!command.autocomplete) return;
         command.autocomplete(interaction);
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        error(err);
       }
     }
   },

@@ -17,7 +17,6 @@ const getHalvingMessage = async (
   );
 
   const file = new AttachmentBuilder(image, { name: "faltan.jpg" });
-  console.dir(file);
 
   const embed = new EmbedBuilder()
     .setTitle(
