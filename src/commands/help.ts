@@ -30,7 +30,7 @@ const command: SlashCommand = {
         .setAuthor(author)
         .setTitle("AYUDA")
         .setDescription(
-          `Soy un simple bot de Discord que muestra en forma de ticker el precio de 1 Bitcoin en dólares Americano.\n(*buscame en el lateral derecho del servidor*)\n\nLos **comandos** que podés usar conmigo son:\n\n
+          `Soy un simple bot de Discord que muestra en forma de ticker el precio de 1 Bitcoin en dólares Americano.\n(*buscame en el lateral derecho del servidor*)\n\nLos **comandos** que podés usar conmigo son:\n
           ${commands
             .map(
               (cmd: SlashCommandBuilder) =>
