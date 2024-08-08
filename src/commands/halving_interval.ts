@@ -1,5 +1,6 @@
 import {
   ChatInputCommandInteraction,
+  Guild,
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
@@ -15,7 +16,7 @@ const command: SlashCommand = {
   command: new SlashCommandBuilder()
     .setName("halving_interval")
     .setDescription(
-      "Cambia el intervalo en que se mandan los mensajes del halving (0 = pausa)"
+      "Cambia o muestra el intervalo en que se mandan los mensajes del halving (0 = pausa)"
     )
     .addIntegerOption((option) =>
       option
@@ -23,37 +24,32 @@ const command: SlashCommand = {
         .setDescription("Intervalo en bloques")
         .setMinValue(0)
         .setMaxValue(9999)
-        .setRequired(true)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
   execute: async (interaction: ChatInputCommandInteraction) => {
     try {
       await interaction.deferReply({ ephemeral: true });
 
-      const interval = interaction.options.getInteger("interval", true);
-      const lastBlock = interaction.client.lastBlock!;
-
-      const updatedGuild = await guildRepository.updateHalvingInterval(
-        interaction.guild!.id,
-        interval,
-        lastBlock.height
-      );
-
-      if (updatedGuild) {
-        interval == 0
-          ? await interaction.editReply({
-              content: `Se pausó el envío automático de mensajes del halving`,
-            })
-          : await interaction.editReply({
-              content: `El mensaje automático se mostrará cada \`${interval}\` bloque${
-                interval === 1 ? "" : "s"
-              }`,
-            });
-        log(`Guild updated: ${updatedGuild}`);
-      } else {
-        error(`ERROR in havling_interval command: ${updatedGuild}`);
+      if (!interaction.guild) {
         await interaction.editReply({
-          content: "Hubo un error al intentar cambiar el intervalo...",
+          content: "No se pudo obtener el servidor asociado a la interacción.",
+        });
+        return;
+      }
+
+      const guild = interaction.guild;
+      const interval = interaction.options.getInteger("interval");
+
+      if (interval) {
+        const lastBlock = interaction.client.lastBlock!;
+        const result = await changeInterval(guild, interval, lastBlock.height);
+        await interaction.editReply({
+          content: `${result.success ? `✅` : `❌`} ${result.message}`,
+        });
+      } else {
+        const result = await showInterval(guild);
+        await interaction.editReply({
+          content: `${result.success ? `✅` : `❌`} ${result.message}`,
         });
       }
     } catch (err) {
@@ -61,6 +57,66 @@ const command: SlashCommand = {
       await interaction.editReply({ content: "Algo salió mal..." });
     }
   },
+};
+
+const changeInterval = async (
+  guild: Guild,
+  interval: number,
+  blockHeight: number
+) => {
+  const updatedGuild = await guildRepository.updateHalvingInterval(
+    guild.id,
+    interval,
+    blockHeight
+  );
+
+  if (updatedGuild) {
+    log(`Guild updated: ${updatedGuild}`);
+    if (interval == 0) {
+      return {
+        success: true,
+        message: `Se pausó el envío automático de mensajes del halving`,
+      };
+    } else {
+      return {
+        success: true,
+        message: `El mensaje automático se mostrará cada \`${interval}\` bloque${
+          interval === 1 ? "" : "s"
+        }`,
+      };
+    }
+  } else {
+    error(`ERROR in havling_interval command: ${updatedGuild}`);
+    return {
+      success: false,
+      message: "Hubo un error al intentar cambiar el intervalo...",
+    };
+  }
+};
+
+const showInterval = async (
+  guild: Guild
+): Promise<{ success: boolean; message: string }> => {
+  const interval = await guildRepository.getInterval(guild.id);
+
+  if (!interval) {
+    return {
+      success: false,
+      message: "No hay intervalo definido",
+    };
+  } else {
+    if (interval == 0) {
+      return {
+        success: true,
+        message: `El intervalo está en 0 (pausa)`,
+      };
+    } else {
+      return {
+        success: true,
+        message: `Intervalo definido en \`${interval}\` bloques`,
+      };
+    }
+  }
 };
 
 export default command;

@@ -185,7 +185,26 @@ class GuildRepository implements IRepository<Guild> {
       return null;
     }
   }
+  async getHalvingChannel(id: string): Promise<string | null> {
+    try {
+      const guild = await this.getById(id);
 
+      return guild?.channel_id || null;
+    } catch (err) {
+      error("ERROR in Guild.getHalvingChannel:", err);
+      return null;
+    }
+  }
+  async getInterval(id: string): Promise<number | null> {
+    try {
+      const guild = await this.getById(id);
+
+      return guild?.interval || null;
+    } catch (err) {
+      error("ERROR in Guild.getInterval:", err);
+      return null;
+    }
+  }
   async getAnnouncements(): Promise<Guild[] | null> {
     try {
       // Get cached (if exists)
