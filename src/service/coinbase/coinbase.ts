@@ -1,6 +1,5 @@
 import { Client } from "discord.js";
 import WebSocket from "ws";
-import { HttpsProxyAgent } from "https-proxy-agent";
 import { CoinbaseMessage } from "./coinbase.d";
 import { logger } from "../../helpers";
 import { Debugger } from "debug";
@@ -10,16 +9,8 @@ const watchPrice = async (client: Client) => {
   const debug: Debugger = log.extend("debug");
   const error: Debugger = log.extend("error");
   try {
-    // For my development environment
-    const agent = process.env.SOCKS_PROXY
-      ? //new SocksProxyAgent(process.env.SOCKS_PROXY, {
-        new HttpsProxyAgent(process.env.SOCKS_PROXY, {
-          keepAlive: true,
-        })
-      : undefined;
-
     const server = "wss://ws-feed.exchange.coinbase.com";
-    const ws = new WebSocket(server, { agent });
+    const ws = new WebSocket(server);
 
     ws.on("open", () => {
       log(`Subsrcibe to server ${server}`);
