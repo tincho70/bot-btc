@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import mempoolJS from "@mempool/mempool.js";
 import { Block } from "@mempool/mempool.js/lib/interfaces/bitcoin/blocks";
-import { Client } from "discord.js";
+import { ActivityType, Client } from "discord.js";
 
 import { Debugger } from "debug";
 import { logger } from "../helpers";
@@ -17,7 +17,7 @@ const watchMempool = async (client: Client) => {
     });
 
     const ws = websocket.initServer({
-      options: ["blocks", "difficulty "],
+      options: ["blocks", "stats"],
     });
 
     client.averageBlockTime = await getTimeAvg();
@@ -28,8 +28,21 @@ const watchMempool = async (client: Client) => {
 
     ws.on("message", function incoming(data) {
       const res = JSON.parse(data.toString());
+      console.log(res.fees);
       if (res.block) {
         client.updateLastBlock(res.block);
+      }
+      if (res.fees) {
+        client.user!.setPresence({
+          activities: [
+            {
+              type: ActivityType.Custom,
+              name: "fees", // name is exposed through the API but not shown in the client for ActivityType.Custom
+              state: `sats/vB: ⏬ ${res.fees.hourFee} ↔️ ${res.fees.halfHourFee} ⏫ ${res.fees.fastestFee}`,
+            },
+          ],
+          status: "online",
+        });
       }
     });
   } catch (err) {
