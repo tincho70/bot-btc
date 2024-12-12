@@ -28,7 +28,7 @@ const watchMempool = async (client: Client) => {
 
     ws.on("message", function incoming(data) {
       const res = JSON.parse(data.toString());
-      console.log(res.fees);
+
       if (res.block) {
         client.updateLastBlock(res.block);
       }
