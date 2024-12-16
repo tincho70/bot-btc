@@ -15,13 +15,21 @@ declare module "discord.js" {
     slashCommands: Collection<string, SlashCommand>;
     cooldowns: Collection<string, number>;
     lastBlock: Block | null;
-    lastPrice: number | null;
+    lastPrice: number;
     averageBlockTime: number | null;
+    fees: Fees | null;
     updateLastBlock: (block: Block) => void;
-    updateTicker: (price: number, open24h: number) => void;
+    updateTicker: (price?: number, open24h?: number) => void;
+    nextStatus: ["change" | "fees", number];
   }
 }
-
+export interface Fees {
+  economy: number;
+  low: number;
+  medium: number;
+  high: number;
+  timestamp: number;
+}
 export interface BotEvent {
   name: string; // Nombre del evento
   once?: boolean | false; // Por única vez?

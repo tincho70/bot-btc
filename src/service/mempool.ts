@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import mempoolJS from "@mempool/mempool.js";
 import { Block } from "@mempool/mempool.js/lib/interfaces/bitcoin/blocks";
-import { ActivityType, Client } from "discord.js";
+import { Client } from "discord.js";
 
 import { Debugger } from "debug";
 import { logger } from "../helpers";
 
 const error: Debugger = logger.extend("mempool").extend("error");
+const debug: Debugger = logger.extend("mempool").extend("debug");
 
 const watchMempool = async (client: Client) => {
   try {
@@ -32,17 +33,18 @@ const watchMempool = async (client: Client) => {
       if (res.block) {
         client.updateLastBlock(res.block);
       }
+
       if (res.fees) {
-        client.user!.setPresence({
-          activities: [
-            {
-              type: ActivityType.Custom,
-              name: "fees", // name is exposed through the API but not shown in the client for ActivityType.Custom
-              state: `sats/vB: ⏬ ${res.fees.hourFee} ↔️ ${res.fees.halfHourFee} ⏫ ${res.fees.fastestFee}`,
-            },
-          ],
-          status: "online",
-        });
+        client.fees = {
+          economy: res.fees.economyFee,
+          low: res.fees.hourFee,
+          medium: res.fees.halfHourFee,
+          high: res.fees.fastestFee,
+          timestamp: Date.now(),
+        };
+
+        debug("Updated fees: ", client.fees);
+        client.updateTicker();
       }
     });
   } catch (err) {
