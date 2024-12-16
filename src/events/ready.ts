@@ -9,6 +9,8 @@ const event: BotEvent = {
   name: Events.ClientReady,
   once: true,
   execute: async (client: Client) => {
+    client.nextStatus = ["change", 0];
+    client.lastPrice = 0;
     ticker(client);
     mempool(client);
     //await client.updateTicker();
